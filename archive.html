@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Alex</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+body{
+    background:#b2c7da;
+}
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:100;
+
+    background:#fae100;
+
+    height:56px;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 16px;
+
+    font-size:22px;
+    font-weight:bold;
+}
+
+.chat{
+    padding:15px;
+}
+
+.date{
+    text-align:center;
+    color:#555;
+    font-size:14px;
+    margin:25px 0;
+}
+
+.msg-wrapper{
+    margin:6px 0;
+}
+
+.right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+}
+
+.msg{
+    display:inline-block;
+
+    max-width:72%;
+
+    padding:10px 14px;
+
+    border-radius:12px;
+
+    line-height:1.45;
+
+    word-break:break-word;
+    white-space:pre-wrap;
+}
+
+.alex{
+    background:white;
+    border:1px solid #ddd;
+}
+
+.sophia{
+    background:#fae100;
+}
+
+.time{
+    font-size:11px;
+    color:#666;
+    margin-top:3px;
+}
+
+.right .time{
+    text-align:right;
+}
+
+.chat-image{
+    max-width:220px;
+    border-radius:10px;
+    display:block;
+}
+
+.image-wrapper{
+    margin:8px 0;
+}
+
+.image-right{
+    display:flex;
+    justify-content:flex-end;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    Alex
+</div>
+
+<div id="chat" class="chat"></div>
+
+<script>
+
+async function loadChat(){
+
+    const response =
+        await fetch("sophia_archive.json");
+
+    const messages =
+        await response.json();
+
+    renderChat(messages);
+
+}
+
+function renderChat(messages){
+
+    const chat =
+        document.getElementById("chat");
+
+    chat.innerHTML = "";
+
+    messages.forEach(item=>{
+
+        if(item.type === "date"){
+
+            const date =
+                document.createElement("div");
+
+            date.className = "date";
+
+            date.textContent =
+                item.text;
+
+            chat.appendChild(date);
+
+            return;
+        }
+
+        if(item.type === "image"){
+
+            const wrapper =
+                document.createElement("div");
+
+            wrapper.className =
+                item.sender === "Sophia"
+                ? "image-wrapper image-right"
+                : "image-wrapper";
+
+            item.images.forEach(src=>{
+
+                const img =
+                    document.createElement("img");
+
+                img.src = src;
+
+                img.className =
+                    "chat-image";
+
+                wrapper.appendChild(img);
+
+            });
+
+            chat.appendChild(wrapper);
+
+            return;
+        }
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            item.sender === "Sophia"
+            ? "msg-wrapper right"
+            : "msg-wrapper";
+
+        const bubble =
+            document.createElement("div");
+
+        bubble.className =
+            "msg " +
+            item.sender.toLowerCase();
+
+        bubble.textContent =
+            item.text;
+
+        const time =
+            document.createElement("div");
+
+        time.className =
+            "time";
+
+        time.textContent =
+            item.time || "";
+
+        wrapper.appendChild(bubble);
+        wrapper.appendChild(time);
+
+        chat.appendChild(wrapper);
+
+    });
+
+}
+
+loadChat();
+
+</script>
+
+</body>
+</html>
